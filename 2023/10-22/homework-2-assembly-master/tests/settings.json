@@ -1,0 +1,36 @@
+{
+  "timeout": 600,
+  "mode": "spim",
+  "output_filters": ["filter_spim", "filter_remove_colon_prompts"],
+  "test_suites": {
+    "byseven": {
+      "tests": [
+        { "desc": "n = 1",  "stdin": "tests/byseven_input_0.txt",  "points": 4 },
+        { "desc": "n = 2",  "stdin": "tests/byseven_input_1.txt",  "points": 2 },
+        { "desc": "n = 4",  "stdin": "tests/byseven_input_2.txt",  "points": 2 },
+        { "desc": "n = 7",  "stdin": "tests/byseven_input_3.txt",  "points": 2 },
+        { "desc": "n = 10", "stdin": "tests/byseven_input_4.txt",  "points": 2 }
+      ]
+    },
+    "recurse": {
+      "tests": [
+        { "desc": "n = 0",    "stdin": "tests/recurse_input_0.txt",  "points": 8 },
+        { "desc": "n = 2",    "stdin": "tests/recurse_input_1.txt",  "points": 8 },
+        { "desc": "n = 4",    "stdin": "tests/recurse_input_2.txt",  "points": 4 },
+        { "desc": "n = 7",    "stdin": "tests/recurse_input_3.txt",  "points": 4 }
+      ]
+    },
+    "BuildEff": {
+      "tests": [
+        { "desc": "One building",                  "stdin": "tests/BuildEff_input_0.txt", "points": 8,  "diff": "float"},
+        { "desc": "Two buildings, in order",       "stdin": "tests/BuildEff_input_1.txt", "points": 6,  "diff": "float"},
+        { "desc": "Two buildings, out of order",   "stdin": "tests/BuildEff_input_2.txt", "points": 5,  "diff": "float"},
+        { "desc": "Six buildings",                 "stdin": "tests/BuildEff_input_3.txt", "points": 4,  "diff": "float"},
+        { "desc": "Stop reading at DONE",          "stdin": "tests/BuildEff_input_4.txt", "points": 3,  "diff": "float"},
+        { "desc": "Check for zero energy usage",   "stdin": "tests/BuildEff_input_5.txt", "points": 4,  "diff": "float"},
+        { "desc": "Check for zero square footage", "stdin": "tests/BuildEff_input_6.txt", "points": 4,  "diff": "float"},
+        { "desc": "100 buildings",                 "stdin": "tests/BuildEff_input_7.txt", "points": 4,  "diff": "float"}
+      ]
+    }
+  }
+}

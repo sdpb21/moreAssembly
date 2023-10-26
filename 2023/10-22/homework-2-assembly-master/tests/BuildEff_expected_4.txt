@@ -1,0 +1,12 @@
+Giles 24.178633
+Chapel 22.448952
+SocPsych 20.192806
+Crowell 20.107912
+Bassett 17.482063
+HudsonAnnex 17.400000
+FitzpatrickCIEMAS 14.108141
+Brown 13.267032
+Hudson 13.267032
+Craven 13.040548
+Teer 11.975928
+EastDuke 9.350241

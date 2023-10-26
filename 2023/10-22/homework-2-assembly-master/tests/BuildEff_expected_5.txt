@@ -1,0 +1,12 @@
+KeziaIvanaDivision 54.040630
+Davidson 24.690681
+Southgate 20.176601
+SocSci 19.002659
+Alspaugh 17.661222
+Language 16.756433
+Few 15.554979
+OldChem 13.556728
+Friedl 11.852372
+WestDuke 10.996368
+Epworth 10.966562
+ShirabelEast 0.000000
