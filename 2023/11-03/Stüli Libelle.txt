@@ -1,0 +1,24 @@
+Stückliste exportiert aus C:/Users/marco/AppData/Local/Temp/Neutron/ElectronFileOutput/35700/sch-7f857bbc-b46c-4b37-8ac7-8dc32b67b2aa/Stromlaufplan Libelle v8.sch am 03.11.2023 08:23
+
+Part Value                  Device                 Package               Description                                                                                          
+BT1  grösser 4V             796136-1               796136-1              Battery Holder - Coin Cell SMD, 20.0mm                                                               
+C1   B32529C0104K289        B32529C0104K289        B32529C0104K289       Metallized Polyester Capacitors (MKT), 0.10uF, 63V DC, 125 C 2.5mm(W) x 6.5mm(H) x 7.3mm(L)          
+C2   B32529C0104K289        B32529C0104K289        B32529C0104K289       Metallized Polyester Capacitors (MKT), 0.10uF, 63V DC, 125 C 2.5mm(W) x 6.5mm(H) x 7.3mm(L)          
+C4   MMK5472J50J01L16.5TR18 MMK5472J50J01L16.5TR18 MMK5472J50J01L165TR18 MMK/F601, Film, Metallized Polyester, General Purpose, 4700 pF, 5%, 50 VDC, 85C, Lead Spacing = 5mm  
+C5   MMK5472J50J01L16.5TR18 MMK5472J50J01L16.5TR18 MMK5472J50J01L165TR18 MMK/F601, Film, Metallized Polyester, General Purpose, 4700 pF, 5%, 50 VDC, 85C, Lead Spacing = 5mm  
+IC1  PIC16F684-I_ML         PIC16F684-I_ML         QFN65P400X400X100-17N IC, 8BIT MCU                                                                                         
+IC2  ADXL327BCPZ-RL7        ADXL327BCPZ-RL7        ADXL327BCPZRL7        Accelerometer Triple +/-2g 2.5V/3.3V 378mV/g to 462mV/g 16-Pin LFCSP EP T/R                          
+IC3  LP2950CZ-3.0_NOPB      LP2950CZ-3.0_NOPB      LP0003A               Series of Fixed Micropower Voltage Regulators                                                        
+IC4  DS04-254-1-01BK-SMT    DS04-254-1-01BK-SMT    DS04254101BKSMT       DIP Switches / SIP Switches 1 12 Positions, Surface Mount, 2.54 mm Pitch, Slide Actuator, DIP Switch 
+LED1 TLHR4400-AS12Z         TLHR4400-AS12Z         TLHR4400AS12Z         Standard LEDs - Through Hole Red 13mcd; 3mm 612-625nm; 2V Typ                                        
+LED2 TLHR4400-AS12Z         TLHR4400-AS12Z         TLHR4400AS12Z         Standard LEDs - Through Hole Red 13mcd; 3mm 612-625nm; 2V Typ                                        
+LED3 TLHR4400-AS12Z         TLHR4400-AS12Z         TLHR4400AS12Z         Standard LEDs - Through Hole Red 13mcd; 3mm 612-625nm; 2V Typ                                        
+LED4 TLHR4400-AS12Z         TLHR4400-AS12Z         TLHR4400AS12Z         Standard LEDs - Through Hole Red 13mcd; 3mm 612-625nm; 2V Typ                                        
+LED5 TLHR4400-AS12Z         TLHR4400-AS12Z         TLHR4400AS12Z         Standard LEDs - Through Hole Red 13mcd; 3mm 612-625nm; 2V Typ                                        
+R1                          R_AXIAL-7.2MM-PITCH    RESAD724W46L381D178B  Resistor Fixed - Generic                                                                             
+R2                          R_AXIAL-7.2MM-PITCH    RESAD724W46L381D178B  Resistor Fixed - Generic                                                                             
+R3                          R_AXIAL-7.2MM-PITCH    RESAD724W46L381D178B  Resistor Fixed - Generic                                                                             
+R4                          R_AXIAL-7.2MM-PITCH    RESAD724W46L381D178B  Resistor Fixed - Generic                                                                             
+R5                          R_AXIAL-7.2MM-PITCH    RESAD724W46L381D178B  Resistor Fixed - Generic                                                                             
+S1   DS01                   DS01                   DS-01                 DIL/CODE SWITCH                                                                                      
+S2   D6C90F2LFS             D6C90F2LFS             D6C90F2LFS            Pushbutton Switches Key Switch N.O. SPDT 100 mA                                                      
