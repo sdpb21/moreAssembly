@@ -25,7 +25,7 @@ START
 
     ;GOTO $                          ; loop forever
     ; Starting A/D convertion (configuring analog input 3 AN3/RA4
-    bsf STATUS,5  ; select bank 1 to access ADCON1 register
+    bsf STATUS,5    ; select bank 1 to access ADCON1 register
     movlw 0x0	    ; move 0x0 to w register
     movwf ADCON1    ; move 0x0 to ADCON1 register for an A/D conversion clock = Fosc/2
     bsf TRISA,4	    ; setting RA4 as input
@@ -37,10 +37,17 @@ START
     bsf ADCON0,1    ; Starts A/D conversion
     btfsc ADCON0,1  ; is conversion done?
     goto $-1	    ; no, test again
-    ;movf ADRESH,0   ; w=ADRESH
+    
+    ; conversion/4 --> ADRESL
     rrf ADRESH,1    ; rotate 1 bit to the right
     bsf STATUS,RP0  ; select bank 1 to access bank 1 registers
     rrf ADRESL,1    ; rotate all bits of adresl to the right
+    bcf STATUS,0    ; clearing carry bit, don't need it
+    bcf STATUS,RP0  ; select bank 0
+    rrf ADRESH,1    ; rotate 1 bit to the right
+    bsf STATUS,RP0  ; select bank 1 to access bank 1 registers
+    rrf ADRESL,1    ; rotate all bits of adresl to the right
+    
     ;movf ADRESL,0   ; w=ADRESL
     
     ; for testing purposes
