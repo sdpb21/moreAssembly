@@ -37,19 +37,22 @@ START
     bsf ADCON0,1    ; Starts A/D conversion
     btfsc ADCON0,1  ; is conversion done?
     goto $-1	    ; no, test again
-    movf ADRESH,0   ; w=ADRESH
+    ;movf ADRESH,0   ; w=ADRESH
+    rrf ADRESH,1    ; rotate 1 bit to the right
     bsf STATUS,RP0  ; select bank 1 to access bank 1 registers
-    movf ADRESL,0   ; w=ADRESL
+    rrf ADRESL,1    ; rotate all bits of adresl to the right
+    ;movf ADRESL,0   ; w=ADRESL
     
     ; for testing purposes
-    clrf TRISA	    ; all pins as digital outputs
-    clrf ANSEL	    ; all pins as digital I/O
-    clrf TRISC	    ; all PORTC pins as outputs
-    movf ADRESL,0   ; move adresl to w register
-    bcf STATUS,5    ; select bank 0 to access bank 0 registers
-    movwf PORTC	    ; moves adresl to portc
-    movf ADRESH,0   ; move ADRESH to w register
-    movwf PORTA	    ; adresh to porta
+    
+;    clrf TRISA	    ; all pins as digital outputs
+;    clrf ANSEL	    ; all pins as digital I/O
+;    clrf TRISC	    ; all PORTC pins as outputs
+;    movf ADRESL,0   ; move adresl to w register
+;    bcf STATUS,5    ; select bank 0 to access bank 0 registers
+;    movwf PORTC	    ; moves adresl to portc
+;    movf ADRESH,0   ; move ADRESH to w register
+;    movwf PORTA	    ; adresh to porta
 
     goto START
     
