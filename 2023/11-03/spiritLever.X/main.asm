@@ -18,6 +18,6 @@ MAIN_PROG CODE                      ; let linker place main program
 
 START
 
-    GOTO $                          ; loop forever
+    ;GOTO $                          ; loop forever
 
     END
