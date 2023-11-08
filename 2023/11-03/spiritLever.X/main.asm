@@ -40,6 +40,16 @@ START
     movf ADRESH,0   ; w=ADRESH
     bsf STATUS,RP0  ; select bank 1 to access bank 1 registers
     movf ADRESL,0   ; w=ADRESL
+    
+    ; for testing purposes
+    clrf TRISA	    ; all pins as digital outputs
+    clrf ANSEL	    ; all pins as digital I/O
+    clrf TRISC	    ; all PORTC pins as outputs
+    movf ADRESH,0   ; move ADRESH to w register
+    bcf STATUS,5    ; select bank 0 to access bank 0 registers
+    movwf PORTA	    ; adresh to porta
+    movf ADRESL,0   ; move adresl to w register
+    movwf PORTC	    ; moves adresl to portc
 
     goto START
     
