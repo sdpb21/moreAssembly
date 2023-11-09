@@ -14,6 +14,7 @@
  org 0 ; Org 0 Tells the assembler where to start generating code.
 
 delay equ 20h	; delay label address
+de500 equ 21h	; to use for a 500ms delay
 
     GOTO    START                   ; go to beginning of program
 
@@ -49,14 +50,18 @@ START
     rrf ADRESL,1    ; rotate all bits of adresl to the right
 
     ; delay
+    movlw .10	    ; w=10
+    movwf de500	    ; de500=10
     movlw b'00000111'; prescaler rate:256
     movwf OPTION_REG; T0CS:internal(Fosc/4), prescaler to TMR0
-    bcf INTCON,T0IF ; Timer0 interrupt flag cleared for a new overflow
+d50 bcf INTCON,T0IF ; Timer0 interrupt flag cleared for a new overflow
     bcf STATUS,RP0  ; select bank 0 for TMR0 register
     movlw d'60'	    ; TMR0=60 for a 50ms delay
     movwf TMR0	    ; w=60=TMR0
     btfss INTCON,T0IF; if T0IF isn't 0,
     goto $-1	    ; go to previous line until T0IF sets
+    decfsz de500    ; to repeat 10 times the 50ms delay
+    goto d50	    ; go to d50 label to repeat the 50ms delay
     
     goto START
     
