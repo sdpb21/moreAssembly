@@ -16,7 +16,7 @@
 delay	equ 20h	; delay label address
 de500	equ 21h	; to use for a 500ms delay
 l0a3	equ 22h	; to store level 0 from AN3
-
+    
     GOTO    START                   ; go to beginning of program
 
 ; TODO ADD INTERRUPTS HERE IF USED
@@ -24,8 +24,6 @@ l0a3	equ 22h	; to store level 0 from AN3
 MAIN_PROG CODE                      ; let linker place main program
 
 START
-
-    ;GOTO $                          ; loop forever
     ; Starting A/D convertion (configuring analog input 3 AN3/RA4
     bsf STATUS,5    ; select bank 1 to access ADCON1 register
     movlw 0x0	    ; move 0x0 to w register
@@ -33,9 +31,12 @@ START
     bsf TRISA,4	    ; setting RA4 as input
     bsf ANSEL,3	    ; set pin RA4/AN3 as analog input
     bcf ANSEL,2	    ; set pin RA2/AN2 as digital I/O
+    clrf WPUA	    ; all PORTA pins without weak pull-up resistor
     bcf STATUS,RP0  ; select bank 0 to access ADCON0 register
     movlw b'10001101'; Right justified, Vref=Vref pin, AN3, ADON=1
     movwf ADCON0    ; w to ADCON0 register, configures and turn on AD converter
+    movlw 0x7
+    movwf CMCON0    ; set RA<2:0> to digital I/O
     call sTim	    ; delay to take a sample
     bsf ADCON0,1    ; Starts A/D conversion
     btfsc ADCON0,1  ; is conversion done?
@@ -53,11 +54,14 @@ START
 
     ; delay
     bcf STATUS,RP0  ; select bank 0 to access GPR memory space
-    movlw d'9'	    ; w=10
+    movlw d'10'	    ; w=10
     movwf de500	    ; de500=10
     bsf STATUS,RP0  ; select bank 1 where OPTION_REG is
     movlw b'00000111'; prescaler rate:256
     movwf OPTION_REG; T0CS:internal(Fosc/4), prescaler to TMR0
+    ;bsf TRISA,2	    ; PORT2 pin 2 as input
+    ;bcf STATUS,5    ; select bank 0
+    ;bcf PORTA,2	    ; clear RA2
 d50 bcf INTCON,T0IF ; Timer0 interrupt flag cleared for a new overflow
     bcf STATUS,RP0  ; select bank 0 for TMR0 register
     movlw d'60'	    ; TMR0=60 for a 50ms delay
@@ -70,7 +74,9 @@ d50 bcf INTCON,T0IF ; Timer0 interrupt flag cleared for a new overflow
     ; setting horizontal level
     btfss PORTA,RA2 ; if RA2 is 1
     goto START	    ; do not go to START and store ADRESL in file register l0a3
+    bsf STATUS,RP0  ; select bank 1
     movf ADRESL,0   ; move ADRESL to w
+    bcf STATUS,RP0  ; select bank 0
     movwf l0a3	    ; stores ADRESL in file register l0a3 (memory)
     
     goto START
