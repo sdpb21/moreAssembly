@@ -47,20 +47,17 @@ START
     rrf ADRESH,1    ; rotate 1 bit to the right
     bsf STATUS,RP0  ; select bank 1 to access bank 1 registers
     rrf ADRESL,1    ; rotate all bits of adresl to the right
-    
-    ;movf ADRESL,0   ; w=ADRESL
-    
-    ; for testing purposes
-    
-;    clrf TRISA	    ; all pins as digital outputs
-;    clrf ANSEL	    ; all pins as digital I/O
-;    clrf TRISC	    ; all PORTC pins as outputs
-;    movf ADRESL,0   ; move adresl to w register
-;    bcf STATUS,5    ; select bank 0 to access bank 0 registers
-;    movwf PORTC	    ; moves adresl to portc
-;    movf ADRESH,0   ; move ADRESH to w register
-;    movwf PORTA	    ; adresh to porta
 
+    ; delay
+    movlw b'00000111'; prescaler rate:256
+    movwf OPTION_REG; T0CS:internal(Fosc/4), prescaler to TMR0
+    bcf INTCON,T0IF ; Timer0 interrupt flag cleared for a new overflow
+    bcf STATUS,RP0  ; select bank 0 for TMR0 register
+    movlw d'60'	    ; TMR0=60 for a 50ms delay
+    movwf TMR0	    ; w=60=TMR0
+    btfss INTCON,T0IF; if T0IF isn't 0,
+    goto $-1	    ; go to previous line until T0IF sets
+    
     goto START
     
 sTim movlw d'12'    ; w=12
