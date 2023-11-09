@@ -50,8 +50,10 @@ START
     rrf ADRESL,1    ; rotate all bits of adresl to the right
 
     ; delay
-    movlw .10	    ; w=10
+    bcf STATUS,RP0  ; select bank 0 to access GPR memory space
+    movlw d'9'	    ; w=10
     movwf de500	    ; de500=10
+    bsf STATUS,RP0  ; select bank 1 where OPTION_REG is
     movlw b'00000111'; prescaler rate:256
     movwf OPTION_REG; T0CS:internal(Fosc/4), prescaler to TMR0
 d50 bcf INTCON,T0IF ; Timer0 interrupt flag cleared for a new overflow
