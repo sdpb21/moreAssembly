@@ -13,8 +13,9 @@
 
  org 0 ; Org 0 Tells the assembler where to start generating code.
 
-delay equ 20h	; delay label address
-de500 equ 21h	; to use for a 500ms delay
+delay	equ 20h	; delay label address
+de500	equ 21h	; to use for a 500ms delay
+l0a3	equ 22h	; to store level 0 from AN3
 
     GOTO    START                   ; go to beginning of program
 
@@ -31,6 +32,7 @@ START
     movwf ADCON1    ; move 0x0 to ADCON1 register for an A/D conversion clock = Fosc/2
     bsf TRISA,4	    ; setting RA4 as input
     bsf ANSEL,3	    ; set pin RA4/AN3 as analog input
+    bcf ANSEL,2	    ; set pin RA2/AN2 as digital I/O
     bcf STATUS,RP0  ; select bank 0 to access ADCON0 register
     movlw b'10001101'; Right justified, Vref=Vref pin, AN3, ADON=1
     movwf ADCON0    ; w to ADCON0 register, configures and turn on AD converter
@@ -64,6 +66,12 @@ d50 bcf INTCON,T0IF ; Timer0 interrupt flag cleared for a new overflow
     goto $-1	    ; go to previous line until T0IF sets
     decfsz de500    ; to repeat 10 times the 50ms delay
     goto d50	    ; go to d50 label to repeat the 50ms delay
+    
+    ; setting horizontal level
+    btfss PORTA,RA2 ; if RA2 is 1
+    goto START	    ; do not go to START and store ADRESL in file register l0a3
+    movf ADRESL,0   ; move ADRESL to w
+    movwf l0a3	    ; stores ADRESL in file register l0a3 (memory)
     
     goto START
     
