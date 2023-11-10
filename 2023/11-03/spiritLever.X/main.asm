@@ -97,6 +97,7 @@ yrl ; level isn't horizontal, must find if it's left or right from center
     ; turn on leds for left
     movlw b'00010000'
     movwf PORTC	    ; RC4=1 turn on yellow led
+    goto START
 rght; turn on leds for right
     movlw b'00000100'
     movwf PORTC	    ; RC2=1 turn on green led
