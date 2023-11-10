@@ -64,6 +64,10 @@ la1
     btfss STATUS,Z  ; if Z=1, turn on green led
     goto yrl	    ; else, turn on yellow or red leds
     ; turn on green led from here
+    bcf STATUS,RP0  ; select bank 0
+    movlw b'00001000'
+    movwf PORTC	    ; RC3=1 turn on green led
+    goto START
     
 yrl
     goto START
