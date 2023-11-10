@@ -17,6 +17,10 @@ delay	equ 20h	; delay label address
 de500	equ 21h	; to use for a 500ms delay
 l0a3	equ 22h	; to store level 0 from AN3
 flags	equ 23h	; flags to avoid some code lines
+Rlr	equ 24h	; Red LED right
+Ylr	equ 25h	; Yellow LED right
+Yll	equ 26h	; Yellow LED left
+Rll	equ 27h	; Red LED left
     
     GOTO    START                   ; go to beginning of program
 
@@ -43,7 +47,7 @@ d50 bcf INTCON,T0IF ; Timer0 interrupt flag cleared for a new overflow
     decfsz de500    ; to repeat 10 times the 50ms delay
     goto d50	    ; go to d50 label to repeat the 50ms delay
     
-    ; setting horizontal level
+    ; setting horizontal level and limits for yellow and red leds
     btfsc flags,0   ; if flags<0> is 0, set the horizontal level
     goto la1	    ; else, avoid setting horizontal level again
     btfss PORTA,RA2 ; if RA2 is 1
@@ -52,7 +56,17 @@ d50 bcf INTCON,T0IF ; Timer0 interrupt flag cleared for a new overflow
     movf ADRESL,0   ; move ADRESL to w
     bcf STATUS,RP0  ; select bank 0
     movwf l0a3	    ; stores ADRESL in file register l0a3 (memory)
+    movwf Ylr	    ; Yellow led right = center
+    movwf Yll	    ; Yellow led left = center
+    movwf Rlr	    ; Red led right = center
+    movwf Rll	    ; Red led left = center
     bsf flags,0	    ; flag to indicate that horizontal level is set
+    movlw d'10'	    ; w=10
+    addwf Ylr,1	    ; Ylr=Ylr+w
+    subwf Yll,1	    ; Yll=Yll-w
+    movlw d'30'	    ; w=30
+    addwf Rlr,1	    ; Rlr=Rlr+w
+    subwf Rll,1	    ; Rll=Rll-w
     goto START
     
 la1
@@ -63,13 +77,12 @@ la1
     xorwf ADRESL,0  ; ADRESL XOR W --> W
     btfss STATUS,Z  ; if Z=1, turn on green led
     goto yrl	    ; else, turn on yellow or red leds
-    ; turn on green led from here
     bcf STATUS,RP0  ; select bank 0
     movlw b'00001000'
     movwf PORTC	    ; RC3=1 turn on green led
     goto START
     
-yrl
+yrl ; level isn't horizontal, must find if it's left or right from center
     goto START
 
 geta3
@@ -113,3 +126,6 @@ sTim movlw d'12'    ; w=12
     return	    ; end of procedure
 
     END
+
+; flags:    bit 0. flag that indicates if horizontal level is set or not
+;	    bit 1.
