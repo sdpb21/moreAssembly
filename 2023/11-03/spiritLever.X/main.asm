@@ -83,6 +83,24 @@ la1
     goto START
     
 yrl ; level isn't horizontal, must find if it's left or right from center
+    ; ADRESL --> actual
+    ; l0a3 --> center
+    ; l0a3 - ADRESL < 0 --> to the right ADRESL > l0a3
+    ; l0a3 - ADRESL > 0 --> to the left l0a3 > ADRESL
+    movf ADRESL,0   ; move ADRESL to w register
+    bcf STATUS,RP0  ; select bank 0
+    subwf l0a3,0    ; w = l0a3 - ADRESL
+    ; C=0 if ADRESL > l0a3 --> to the right
+    ; C=1 if ADRESL < l0a3 --> to the left
+    btfss STATUS,C  ; if C=1, turn on yellow or red leds for left
+    goto rght
+    ; turn on leds for left
+    movlw b'00010000'
+    movwf PORTC	    ; RC4=1 turn on yellow led
+rght; turn on leds for right
+    movlw b'00000100'
+    movwf PORTC	    ; RC2=1 turn on green led
+    
     goto START
 
 geta3
