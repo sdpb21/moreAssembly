@@ -95,12 +95,44 @@ yrl ; level isn't horizontal, must find if it's left or right from center
     btfss STATUS,C  ; if C=1, turn on yellow or red leds for left
     goto rght
     ; turn on leds for left
-    movlw b'00010000'
-    movwf PORTC	    ; RC4=1 turn on yellow led
+    ; compare ADRESL with Rll, if ADRESL < Rll, turn on left red led
+    ; Rll - ADRESL < 0 --> ADRESL > Rll --> YELLOW
+    ; Rll - ADRESL > 0 --> ADRESL < Rll --> RED
+    bsf STATUS,RP0  ; select bank 1 to access ADRESL register
+    movf ADRESL,0   ; move ADRESL to w register
+    bcf STATUS,RP0  ; select bank 0 to access Rll file register
+    subwf Rll,0	    ; w = Rll - ADRESL
+    ; C=0 if ADRESL > Rll --> YELLOW
+    ; C=1 if ADRESL < Rll --> RED
+    btfss STATUS,C  ; if C=1 turn on left red led
+    goto ylL	    ; else, go to ylL label to turn on yellow left led
+    movlw b'00100000'
+    movwf PORTC	    ; RC5=1 turn on red left led
     goto START
+    
+ylL movlw b'00010000'
+    movwf PORTC	    ; RC4=1 turn on yellow left led
+    
+    goto START
+    
 rght; turn on leds for right
-    movlw b'00000100'
-    movwf PORTC	    ; RC2=1 turn on green led
+    ; compare ADRESL with Rlr, if ADRESL > Rlr, turn on right red led
+    ; Rlr - ADRESL < 0 --> ADRESL > Rlr --> RED
+    ; Rlr - ADRESL > 0 --> ADRESL < Rlr --> YELLOW
+    bsf STATUS,RP0  ; select bank 1 to access ADRESL register
+    movf ADRESL,0   ; move ADRESL to w register
+    bcf STATUS,RP0  ; select bank 0 to access Rlr file register
+    subwf Rlr,0	    ; w = Rlr - ADRESL
+    ; C=0 if ADRESL > Rlr --> RED
+    ; C=1 if ADRESL < Rlr --> YELLOW
+    btfsc STATUS,C  ; if C=0 turn on right red led
+    goto ylR	    ; else, go to ylR label to turn on yellow right led
+    movlw b'00000010'
+    movwf PORTC	    ; RC1=1 turn on red right led
+    goto START
+    ;*********************************************
+ylR movlw b'00000100'
+    movwf PORTC	    ; RC2=1 turn on yellow right led
     
     goto START
 
