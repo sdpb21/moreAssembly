@@ -108,12 +108,12 @@ yrl ; level isn't horizontal, must find if it's left or right from center
     goto ylL	    ; else, go to ylL label to turn on yellow left led
     movlw b'00100000'
     movwf PORTC	    ; RC5=1 turn on red left led
-    goto START
+    goto START	    ; repeat all again
     
 ylL movlw b'00010000'
     movwf PORTC	    ; RC4=1 turn on yellow left led
     
-    goto START
+    goto START	    ; repeat all again
     
 rght; turn on leds for right
     ; compare ADRESL with Rlr, if ADRESL > Rlr, turn on right red led
@@ -129,12 +129,12 @@ rght; turn on leds for right
     goto ylR	    ; else, go to ylR label to turn on yellow right led
     movlw b'00000010'
     movwf PORTC	    ; RC1=1 turn on red right led
-    goto START
-    ;*********************************************
+    goto START	    ; repeat all again
+    
 ylR movlw b'00000100'
     movwf PORTC	    ; RC2=1 turn on yellow right led
     
-    goto START
+    goto START	    ; repeat all again
 
 geta3
     ; Starting A/D convertion (configuring analog input 3 AN3/RA4
