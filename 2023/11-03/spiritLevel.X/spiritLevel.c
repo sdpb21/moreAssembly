@@ -25,6 +25,15 @@
 
 #include <xc.h>
 
+#define _XTAL_FREQ 4000000
+
 void main(void) {
-    return;
+    
+    //STATUSbits.RP0 = 1;
+    ADCON1 = 0b01110000;
+    while(1){
+        ;
+    }
+    //return;
 }
+// /opt/microchip/xc8/v2.40/include
