@@ -26,6 +26,10 @@
 #include <xc.h>
 
 #define _XTAL_FREQ 4000000
+#define greenLedLowLim_HA   508 // 1.49 V
+#define greenLedHighLim_HA  515 // 1.51 V
+#define yelLefLedHiLim_HA   529 // 1.55 V
+#define yelRigLedLowLim_HA  495 // 1.45 V
 unsigned int adc, yLevel0;
 __bit flag = 0;
 
@@ -38,16 +42,41 @@ void main(void) {
         ANSEL = 0b00011000;     // analog inputs: AN3, AN4, digital I/O: AN2, AN5, AN6, AN7
         ADCON0 = 0b11001101;    // Right justified, Vref=Vref pin, AN3, ADON=1
         ADCON0bits.GO = 1;      // Starts an A/D conversion cycle
-        while( ADCON0bits.GO == 1 ){
+        while( ADCON0bits.GO == 1 ){    // waiting for the conversion
             ;
         }
-        adc = (ADRESH << 8) + ADRESL;
-        __delay_ms(500);
+        adc = (ADRESH << 8) + ADRESL;   // conversion result to adc var
+        __delay_ms(500);        // 500ms delay
+        
+        // setting 0 level for Y axis
         if( !flag && PORTAbits.RA2 == 1 ){
-            yLevel0 = adc;
-            flag = 1;
+            yLevel0 = adc;      // storing Y zero level
+            flag = 1;           // flag to indicate that Y zero level is set
+        }
+        
+        // turn on green, yellow o red led
+        if( flag ){
+            // turn on green led
+            if( adc >= greenLedLowLim_HA && adc <= greenLedHighLim_HA ){
+                PORTC = 0b00001000;
+            }
+            // turn on yellow left led
+            if( adc > greenLedHighLim_HA && adc <= yelLefLedHiLim_HA ){
+                PORTC = 0b00010000;
+            }
+            // turn on yellow right led
+            if( adc >= yelRigLedLowLim_HA && adc < greenLedLowLim_HA ){
+                PORTC = 0b00000100;
+            }
+            // turn on red left led
+            if( adc > yelLefLedHiLim_HA ){
+                PORTC = 0b00100000;
+            }
+            // turn on red right led
+            if( adc < yelRigLedLowLim_HA ){
+                PORTC = 0b00000010;
+            }
         }
     }
     //return;
 }
-// /opt/microchip/xc8/v2.40/include
