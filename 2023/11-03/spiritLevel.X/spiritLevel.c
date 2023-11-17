@@ -42,6 +42,7 @@ void main(void) {
             ;
         }
         adc = (ADRESH << 8) + ADRESL;
+        __delay_ms(500);
         if( !flag && PORTAbits.RA2 == 1 ){
             yLevel0 = adc;
             flag = 1;
