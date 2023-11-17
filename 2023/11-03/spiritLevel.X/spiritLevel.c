@@ -52,6 +52,8 @@ void main(void) {
         if( !flag && PORTAbits.RA2 == 1 ){
             yLevel0 = adc;      // storing Y zero level
             flag = 1;           // flag to indicate that Y zero level is set
+            PORTC = 0b00001000; // turn on green led (center)
+            continue;
         }
         
         // turn on green, yellow o red led
