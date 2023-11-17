@@ -4,6 +4,7 @@ int intZ=0;
 
 void setup() {
   // put your setup code here, to run once:
+  analogReference(EXTERNAL);
   Serial.begin(9600); // Initializes serial port
   while(!Serial){
     ; // wait for serial port to connect. Needed for native USB

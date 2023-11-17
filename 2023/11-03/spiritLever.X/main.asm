@@ -150,7 +150,7 @@ geta3
     movwf ANSEL	    ; digital I/O: AN2, AN5, AN6, AN7
     clrf WPUA	    ; all PORTA pins without weak pull-up resistor
     bcf STATUS,RP0  ; select bank 0 to access ADCON0 register
-    movlw b'10001101'; Right justified, Vref=Vref pin, AN3, ADON=1
+    movlw b'11001101'; Right justified, Vref=Vref pin, AN3, ADON=1
     movwf ADCON0    ; w to ADCON0 register, configures and turn on AD converter
     movlw 0x7
     movwf CMCON0    ; set RA<2:0> to digital I/O
