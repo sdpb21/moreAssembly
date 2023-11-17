@@ -26,13 +26,26 @@
 #include <xc.h>
 
 #define _XTAL_FREQ 4000000
+unsigned int adc, yLevel0;
+__bit flag = 0;
 
 void main(void) {
     
-    //STATUSbits.RP0 = 1;
-    ADCON1 = 0b01110000;
     while(1){
-        ;
+        ADCON1 = 0b00010000;    // A/D conversion clock set to Fosc/8
+        TRISAbits.TRISA4 = 1;   // setting RA4/AN3 as input
+        TRISC = 0b00000001;     // RC0/AN4 as analog input, others as outputs
+        ANSEL = 0b00011000;     // analog inputs: AN3, AN4, digital I/O: AN2, AN5, AN6, AN7
+        ADCON0 = 0b11001101;    // Right justified, Vref=Vref pin, AN3, ADON=1
+        ADCON0bits.GO = 1;      // Starts an A/D conversion cycle
+        while( ADCON0bits.GO == 1 ){
+            ;
+        }
+        adc = (ADRESH << 8) + ADRESL;
+        if( !flag && PORTAbits.RA2 == 1 ){
+            yLevel0 = adc;
+            flag = 1;
+        }
     }
     //return;
 }
