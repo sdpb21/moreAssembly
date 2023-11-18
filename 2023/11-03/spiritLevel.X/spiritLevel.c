@@ -24,6 +24,7 @@
 // Use project enums instead of #define for ON and OFF.
 
 #include <xc.h>
+#include <stdlib.h>
 
 #define _XTAL_FREQ 4000000
 
@@ -37,8 +38,11 @@
 #define yelLefLedHiLim_LA   529 // 1.60 V
 #define yelRigLedLowLim_LA  495 // 1.40 V
 
-unsigned int adc3, adc4, yLevel0;
+#define adcM                511 // 1.50 V
+
+unsigned int adc3, adc4, adc, yLevel0;
 __bit flag = 0;
+int difY, difZ;
 
 void main(void) {
     
@@ -55,6 +59,8 @@ void main(void) {
             ;
         }
         adc3 = (ADRESH << 8) + ADRESL;   // conversion result to adc3 var
+        difY = adc3 - adcM;     // difference between analog read Y and middle point
+        difY = abs(difY);       // difference absolute value
         
         // reading analog input AN4 (Z axis)
         ADCON0 = 0b11010001;    // Right justified, Vref=Vref pin, AN4, ADON=1
@@ -63,12 +69,22 @@ void main(void) {
             ;
         }
         adc4 = (ADRESH << 8) + ADRESL;   // conversion result to adc4 var
+        difZ = adc4 - adcM;     // difference between analog read Z and middle point
+        difZ = abs(difZ);       // difference absolute value to compare
+        
+        // if difY < difZ, Y axis is horizontal or close to
+        // else Z axis is horizontal or close to that position
+        if( difY < difZ ){
+            adc = adc3;         // Y axis converted value to adc variable to compare
+        }else{
+            adc = adc4;         // Z axis converted value to adc var to compare below
+        }
         
         __delay_ms(500);        // 500ms delay
         
         // setting 0 level for Y axis
         if( !flag && PORTAbits.RA2 == 1 ){
-            yLevel0 = adc3;      // storing Y zero level
+            yLevel0 = adc;      // storing Y zero level
             flag = 1;           // flag to indicate that Y zero level is set
             PORTC = 0b00001000; // turn on green led (center)
             continue;
@@ -77,23 +93,23 @@ void main(void) {
         // turn on green, yellow o red led (High Accuracy)
         if( flag && PORTAbits.RA5 == 0 ){
             // turn on green led
-            if( adc3 >= greenLedLowLim_HA && adc3 <= greenLedHighLim_HA ){
+            if( adc >= greenLedLowLim_HA && adc <= greenLedHighLim_HA ){
                 PORTC = 0b00001000;
             }
             // turn on yellow left led
-            if( adc3 > greenLedHighLim_HA && adc3 <= yelLefLedHiLim_HA ){
+            if( adc > greenLedHighLim_HA && adc <= yelLefLedHiLim_HA ){
                 PORTC = 0b00010000;
             }
             // turn on yellow right led
-            if( adc3 >= yelRigLedLowLim_HA && adc3 < greenLedLowLim_HA ){
+            if( adc >= yelRigLedLowLim_HA && adc < greenLedLowLim_HA ){
                 PORTC = 0b00000100;
             }
             // turn on red left led
-            if( adc3 > yelLefLedHiLim_HA ){
+            if( adc > yelLefLedHiLim_HA ){
                 PORTC = 0b00100000;
             }
             // turn on red right led
-            if( adc3 < yelRigLedLowLim_HA ){
+            if( adc < yelRigLedLowLim_HA ){
                 PORTC = 0b00000010;
             }
         }
@@ -101,23 +117,23 @@ void main(void) {
         // turn on green, yellow o red led (Low Accuracy)
         if( flag && PORTAbits.RA5 == 1 ){
             // turn on green led
-            if( adc3 >= greenLedLowLim_LA && adc3 <= greenLedHighLim_LA ){
+            if( adc >= greenLedLowLim_LA && adc <= greenLedHighLim_LA ){
                 PORTC = 0b00001000;
             }
             // turn on yellow left led
-            if( adc3 > greenLedHighLim_LA && adc3 <= yelLefLedHiLim_LA ){
+            if( adc > greenLedHighLim_LA && adc <= yelLefLedHiLim_LA ){
                 PORTC = 0b00010000;
             }
             // turn on yellow right led
-            if( adc3 >= yelRigLedLowLim_LA && adc3 < greenLedLowLim_LA ){
+            if( adc >= yelRigLedLowLim_LA && adc < greenLedLowLim_LA ){
                 PORTC = 0b00000100;
             }
             // turn on red left led
-            if( adc3 > yelLefLedHiLim_LA ){
+            if( adc > yelLefLedHiLim_LA ){
                 PORTC = 0b00100000;
             }
             // turn on red right led
-            if( adc3 < yelRigLedLowLim_LA ){
+            if( adc < yelRigLedLowLim_LA ){
                 PORTC = 0b00000010;
             }
         }
