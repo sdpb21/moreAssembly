@@ -26,10 +26,17 @@
 #include <xc.h>
 
 #define _XTAL_FREQ 4000000
+
 #define greenLedLowLim_HA   508 // 1.49 V
 #define greenLedHighLim_HA  515 // 1.51 V
 #define yelLefLedHiLim_HA   529 // 1.55 V
 #define yelRigLedLowLim_HA  495 // 1.45 V
+
+#define greenLedLowLim_LA   508 // 1.48 V
+#define greenLedHighLim_LA  515 // 1.52 V
+#define yelLefLedHiLim_LA   529 // 1.60 V
+#define yelRigLedLowLim_LA  495 // 1.40 V
+
 unsigned int adc3, adc4, yLevel0;
 __bit flag = 0;
 
@@ -67,8 +74,8 @@ void main(void) {
             continue;
         }
         
-        // turn on green, yellow o red led
-        if( flag ){
+        // turn on green, yellow o red led (High Accuracy)
+        if( flag && PORTAbits.RA5 == 0 ){
             // turn on green led
             if( adc3 >= greenLedLowLim_HA && adc3 <= greenLedHighLim_HA ){
                 PORTC = 0b00001000;
@@ -87,6 +94,30 @@ void main(void) {
             }
             // turn on red right led
             if( adc3 < yelRigLedLowLim_HA ){
+                PORTC = 0b00000010;
+            }
+        }
+        
+        // turn on green, yellow o red led (Low Accuracy)
+        if( flag && PORTAbits.RA5 == 1 ){
+            // turn on green led
+            if( adc3 >= greenLedLowLim_LA && adc3 <= greenLedHighLim_LA ){
+                PORTC = 0b00001000;
+            }
+            // turn on yellow left led
+            if( adc3 > greenLedHighLim_LA && adc3 <= yelLefLedHiLim_LA ){
+                PORTC = 0b00010000;
+            }
+            // turn on yellow right led
+            if( adc3 >= yelRigLedLowLim_LA && adc3 < greenLedLowLim_LA ){
+                PORTC = 0b00000100;
+            }
+            // turn on red left led
+            if( adc3 > yelLefLedHiLim_LA ){
+                PORTC = 0b00100000;
+            }
+            // turn on red right led
+            if( adc3 < yelRigLedLowLim_LA ){
                 PORTC = 0b00000010;
             }
         }
