@@ -33,10 +33,10 @@
 #define yelLefLedHiLim_HA   529 // 1.55 V
 #define yelRigLedLowLim_HA  495 // 1.45 V
 
-#define greenLedLowLim_LA   508 // 1.48 V
-#define greenLedHighLim_LA  515 // 1.52 V
-#define yelLefLedHiLim_LA   529 // 1.60 V
-#define yelRigLedLowLim_LA  495 // 1.40 V
+#define greenLedLowLim_LA   505 // 1.48 V
+#define greenLedHighLim_LA  518 // 1.52 V
+#define yelLefLedHiLim_LA   546 // 1.60 V
+#define yelRigLedLowLim_LA  477 // 1.40 V
 
 #define adcM                511 // 1.50 V
 
