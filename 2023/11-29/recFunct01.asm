@@ -1,75 +1,63 @@
 .data
-prompt: .asciiz "Enter the value of N: "
-newline: .asciiz "\n"
+prompt:      .asciiz "Enter the length of binary patterns (N): "
+newline:     .asciiz "\n"
 
 .text
-.globl main
 main:
-    # Prompt the user for the value of N
-    la $a0, prompt
-    li $v0, 4
+    # Print prompt
+    li      $v0, 4              # syscall for print string
+    la      $a0, prompt         # load address of prompt
     syscall
 
-    # Read the value of N from the user
-    li $v0, 5
+    # Read integer N
+    li      $v0, 5              # syscall for read integer
     syscall
-    move $s0, $v0  # Store the value of N in $s0
+    move    $t0, $v0            # store N in $t0
 
-    # Call the recursive function to print the binary patterns
-    move $a0, $s0
-    jal print_binary_patterns
-    li $v0, 10
-    syscall
+    # Call the recursive function to print binary patterns
+    li      $t1, 0              # initialize index to 0
+    jal     printBinaryPatterns  # call the function
 
-print_binary_patterns:
-    # Save the return address and frame pointer
-    addi $sp, $sp, -8
-    sw $ra, 4($sp)
-    sw $fp, 0($sp)
-    move $fp, $sp
-
-    # Base case: if N is 0, print a newline and return
-    beq $a0, $zero, print_newline
-
-    # Recursive case: print 0 and 1 for the current position
-    li $t0, 0
-    move $a0, $t0
-    jal print_bit
-    li $t0, 1
-    move $a0, $t0
-    jal print_bit
-
-    # Recursive call for the remaining positions
-    addi $a0, $a0, -1
-    jal print_binary_patterns
-
-    # Restore the return address and frame pointer
-    lw $fp, 0($sp)
-    lw $ra, 4($sp)
-    addi $sp, $sp, 8
-
-    # Return from the function
-    jr $ra
-
-print_bit:
-    # Print the current bit
-    move $a0, $t0
-    li $v0, 1
+    # Exit program
+    li      $v0, 10             # syscall for exit
     syscall
 
-    # Print a space
-    la $a0, newline
-    li $v0, 4
+# Recursive function to print binary patterns
+# Arguments:
+#   $t0 - length of binary pattern (N)
+#   $t1 - current index (depth of recursion)
+printBinaryPatterns:
+    # Base case: if index equals N, print the current pattern
+    beq     $t1, $t0, printPattern
+
+    # Recursive case: generate binary patterns
+    # First, add '0' at current index
+    li      $t2, 0              # load 0
+    sb      $t2, ($sp)          # store '0' in stack
+    addi    $sp, $sp, -1        # move stack pointer
+    addi    $t1, $t1, 1         # increment index
+    jal     printBinaryPatterns  # recursive call
+    addi    $t1, $t1, -1        # backtrack index
+    addi    $sp, $sp, 1         # restore stack pointer
+
+    # Now add '1' at current index
+    li      $t2, 1              # load 1
+    sb      $t2, ($sp)          # store '1' in stack
+    addi    $sp, $sp, -1        # move stack pointer
+    addi    $t1, $t1, 1         # increment index
+    jal     printBinaryPatterns  # recursive call
+    addi    $t1, $t1, -1        # backtrack index
+    addi    $sp, $sp, 1         # restore stack pointer
+    jr      $ra                  # return from function
+
+printPattern:
+    # Print the binary pattern stored in the stack
+    addi    $sp, $sp, 1         # adjust stack pointer to point to the start of the pattern
+    li      $v0, 4              # syscall for print string
+    move    $a0, $sp            # load address of the pattern
     syscall
-
-    # Return from the function
-    jr $ra
-
-print_newline:
-    # Print a newline
-    la $a0, newline
-    li $v0, 4
+    li      $v0, 4              # syscall for print newline
+    la      $a0, newline
     syscall
-
-    # Return from the function
-    jr $ra
+    addi    $sp, $sp, -1        # restore stack pointer
+    jr      $ra                  # return from function
