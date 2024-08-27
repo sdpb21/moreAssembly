@@ -12,10 +12,10 @@ main:
     # Read integer N
     li      $v0, 5              # syscall for read integer
     syscall
-    move    $t0, $v0            # store N in $t0
+    move    $a0, $v0            # store N in $a0
 
     # Call the recursive function to print binary patterns
-    li      $t1, 0              # initialize index to 0
+    li      $t0, 0              # initialize index to 0
     jal     printBinaryPatterns  # call the function
 
     # Exit program
@@ -24,30 +24,40 @@ main:
 
 # Recursive function to print binary patterns
 # Arguments:
-#   $t0 - length of binary pattern (N)
-#   $t1 - current index (depth of recursion)
+#   $a0 - length of binary pattern (N)
+#   $t0 - current index (depth of recursion)
 printBinaryPatterns:
+    # Save the return address and registers
+    addi    $sp, $sp, -8        # make space on the stack
+    sw      $ra, 4($sp)         # save return address
+    sw      $t0, 0($sp)         # save current index
+
     # Base case: if index equals N, print the current pattern
-    beq     $t1, $t0, printPattern
+    beq     $t0, $a0, printPattern
 
     # Recursive case: generate binary patterns
     # First, add '0' at current index
-    li      $t2, 0              # load 0
-    sb      $t2, ($sp)          # store '0' in stack
+    li      $t1, 0              # load 0
+    sb      $t1, ($sp)          # store '0' in stack
     addi    $sp, $sp, -1        # move stack pointer
-    addi    $t1, $t1, 1         # increment index
+    addi    $t0, $t0, 1         # increment index
     jal     printBinaryPatterns  # recursive call
-    addi    $t1, $t1, -1        # backtrack index
+    addi    $t0, $t0, -1        # backtrack index
     addi    $sp, $sp, 1         # restore stack pointer
 
     # Now add '1' at current index
-    li      $t2, 1              # load 1
-    sb      $t2, ($sp)          # store '1' in stack
+    li      $t1, 1              # load 1
+    sb      $t1, ($sp)          # store '1' in stack
     addi    $sp, $sp, -1        # move stack pointer
-    addi    $t1, $t1, 1         # increment index
+    addi    $t0, $t0, 1         # increment index
     jal     printBinaryPatterns  # recursive call
-    addi    $t1, $t1, -1        # backtrack index
+    addi    $t0, $t0, -1        # backtrack index
     addi    $sp, $sp, 1         # restore stack pointer
+
+    # Restore registers and return
+    lw      $t0, 0($sp)         # restore current index
+    lw      $ra, 4($sp)         # restore return address
+    addi    $sp, $sp, 8         # restore stack pointer
     jr      $ra                  # return from function
 
 printPattern:
@@ -60,4 +70,8 @@ printPattern:
     la      $a0, newline
     syscall
     addi    $sp, $sp, -1        # restore stack pointer
+    # Restore registers and return
+    lw      $t0, 0($sp)         # restore current index
+    lw      $ra, 4($sp)         # restore return address
+    addi    $sp, $sp, 8         # restore stack pointer
     jr      $ra                  # return from function
