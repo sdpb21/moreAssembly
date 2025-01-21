@@ -1,0 +1,30 @@
+section .data
+  Msg:
+  msg1: db " What's your name?",10,0
+  msg2: db" Hello %s, Welcome to NASM",10,0
+formin : db '%s', 0
+formout : db '%s',10,0
+name times 4 db 0;
+
+  section .text
+  global _main
+  extern _scanf
+  extern _printf
+  
+    _main:
+;   push ebp
+   mov ebp,esp
+ 
+  push msg1
+  call _printf
+
+mov eax, name 
+push name
+push formin
+call _scanf
+
+push msg2
+call _printf
+
+pop ecx
+ret
