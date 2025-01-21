@@ -4,12 +4,13 @@
 
 section .data
 
-int_inMsg:    db        "Input:" , 10, 0 ;10 for new line, 0 for null
-intFormat     db        "%d", 0
+int_inMsg:	db	"Input:" , 10, 0 ;10 for new line, 0 for null
+outputMsg:	db	"Output:", 10, 0
+intFormat	db	"%d", 0
 
         section .bss
 index:		resd	1
-numbers:	resq	10
+numbers:	resq	10	; to store 64 bits integers
 
 
 global main
@@ -56,6 +57,10 @@ add_number:
 	inc r14			; counting repetitions
 	cmp r14, r15		; comparing with index
 	jne add_number		; if not equal, repeat
+
+	lea rdi, [outputMsg]    ; first argument for printf - prints "Output:"
+        xor rax, rax
+        call printf
 
         ; return
         pop rbp ;restore stack
