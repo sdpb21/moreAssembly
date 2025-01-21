@@ -7,25 +7,28 @@ lenP        equ $ - palindrome
 notPalindrome   db  'The word is not a palindrome'
 lenNP           equ $ - notPalindrome
 
-segment .bss
-input   resb  10        ; reserve 10 bytes for input
+input   db  '123454321',        ; reserve 10 bytes for input
 length  equ $ - input
+
+;segment .bss
+;input   resb  10        ; reserve 10 bytes for input
+;length  equ $ - input
 
 section .text
     global main
     
 main:
-    mov     edx, len        ; number of bytes to write
-    mov     ecx, msg        ; ECX will point to the address of the string msg
-    mov     ebx, 1          ; write to the STDOUT file
-    mov     eax, 4          ; invoke SYS_WRITE (kernel opcode 4)
-    int     0x80
+    ;mov     edx, len        ; number of bytes to write
+    ;mov     ecx, msg        ; ECX will point to the address of the string msg
+    ;mov     ebx, 1          ; write to the STDOUT file
+    ;mov     eax, 4          ; invoke SYS_WRITE (kernel opcode 4)
+    ;int     0x80
     
-    mov     edx, 10         ; number of bytes to read
+    mov     eax, length         ; number of bytes to read
     mov     ecx, input      ; reserve space for the user's input
-    mov     ebx, 0          ; write to the STDIN file
-    mov     eax, 3          ; invoke SYS_READ (kernel opcode 3)
-    int     0x80            ; start of word  
+    ;mov     ebx, 0          ; write to the STDIN file
+    ;mov     eax, 3          ; invoke SYS_READ (kernel opcode 3)
+    ;int     0x80            ; start of word  
 
     add     eax, ecx
     dec     eax
@@ -54,6 +57,10 @@ check:
     
     inc ecx
     dec eax
+	mov r15, rax
+	sub r15, rcx	; end - start
+	cmp r15, 1
+	jle finished
     jmp capitalizer
     
 finished:
