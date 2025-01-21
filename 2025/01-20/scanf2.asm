@@ -9,7 +9,7 @@ intFormat     db        "%d", 0
 
         section .bss
 index:		resd	1
-numbers:	resd	10
+numbers:	resq	10
 
 
 global main
@@ -47,15 +47,15 @@ main:
 add_number:
 
 	lea rdi, [intFormat]	; first arg for scanf
-        lea rsi, [numbers]	; second arg for scanf
+        lea rsi, [numbers + r14*8]	; second arg for scanf
         xor rax, rax
         call scanf
 
 	; to repeat an index number of times
 
-	inc r14
-	cmp r14, r15
-	jne add_number
+	inc r14			; counting repetitions
+	cmp r14, r15		; comparing with index
+	jne add_number		; if not equal, repeat
 
         ; return
         pop rbp ;restore stack
