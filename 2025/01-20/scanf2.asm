@@ -38,7 +38,7 @@ main:
         xor rax, rax
         call scanf
 
-	mov rsi, [index]
+	mov rsi, [index]	; moving index stored in memory to rsi register
 	mov r15, rsi		; store rsi value in r15
 	xor r14, r14		; r14 = 0
 
