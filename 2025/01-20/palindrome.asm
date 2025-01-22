@@ -7,7 +7,7 @@ lenP        equ $ - palindrome
 notPalindrome   db  'The word is not a palindrome'
 lenNP           equ $ - notPalindrome
 
-input   db  '123454321',        ; reserve 10 bytes for input
+input   db  '1234564321',        ; reserve 10 bytes for input
 length  equ $ - input
 
 ;segment .bss
@@ -59,7 +59,7 @@ check:
     dec eax
 	mov r15, rax
 	sub r15, rcx	; end - start
-	cmp r15, 1
+	cmp r15, 0
 	jle finished
     jmp capitalizer
     
