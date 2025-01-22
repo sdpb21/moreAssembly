@@ -4,22 +4,15 @@
 
 ;	gcc -no-pie -o scanf2 scanf2.o
 
+
 section .data
 
-palindrome  db  'The word is a palindrome'
-lenP        equ $ - palindrome
-
-notPalindrome   db  'The word is not a palindrome'
-lenNP           equ $ - notPalindrome
-
-input   db  '123454321',        ; reserve 10 bytes for input
-length  equ $ - input
-
+slashn		db	10
 int_inMsg:	db	"Input:" , 10, 0 ;10 for new line, 0 for null
 outputMsg:	db	"Output:", 10, 0
 intFormat	db	"%d", 0
 
-        section .bss
+section .bss
 index:		resd	1
 numbers:	resq	10	; to store 64 bits integers
 buffer 		resb	10
@@ -31,7 +24,7 @@ default rel
 
 section .text
 
-main: 
+main:
 
         push rbp ;setup stack - store old value of sp
 
@@ -77,7 +70,8 @@ add_number:
 	; reading numbers stored on memory
 
 	xor r14, r14            ; r14 = 0
-pal:	mov r13, [numbers + r14*8]	; copy the number stored to r13 register
+next_number:
+	mov r13, [numbers + r14*8]	; copy the number stored to r13 register
 
 find_palindrome:
 	inc r13			; 
@@ -87,7 +81,9 @@ find_palindrome:
 	mov rax, r13
 	mov esi, buffer
 	call int_to_string
-	mov edx, eax
+	mov edx, eax		; using edx as a temp variable
+	mov r11, rcx		; storing the string length in case of finding the palindrome number
+	mov r10, rax		; address with number in string format to print in palindrome case
 
 ;**************************************************************
 ; palindromo
@@ -132,19 +128,30 @@ check:
     jmp capitalizer
 
 finished:
-    mov     edx, lenP
-    mov     ecx, palindrome
+
+    mov     rdx, r11
+    mov     rcx, r10
     mov     ebx, 1
     mov     eax, 4
     int     0x80
-    jmp     exit
+
+	mov edx, 1
+    	mov ecx, slashn
+    	mov ebx, 1
+    	mov eax, 4
+    	int 0x80
+
+	inc r14		; next number stored in memory
+	cmp r14, r15	; comparing with the counter of numbers introduced to finish execution
+	je exit
+    jmp     next_number
 
 fail:
-    mov     edx, lenNP
-    mov     ecx, notPalindrome
-    mov     ebx, 1
-    mov     eax, 4
-    int     0x80
+    ;mov     edx, lenNP
+    ;mov     ecx, notPalindrome
+    ;mov     ebx, 1
+    ;mov     eax, 4
+    ;int     0x80
 	jmp find_palindrome
 
  exit:
