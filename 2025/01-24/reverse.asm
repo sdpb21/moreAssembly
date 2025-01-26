@@ -23,6 +23,7 @@ buf_in: resb 256 ; Buffer for reading lines
 s1: resb 128 ; Buffer for first reversed number
 s2: resb 128 ; Buffer for second reversed number
 buf_sum: resb 256 ; Buffer for the reversed sum
+index:	resd	1
 
 section .text
 global _start
@@ -241,7 +242,7 @@ parse_two_reversed: push ebp
 convert_string_to_int_in_EBX: push ebp
 	mov ebp, esp
 	mov ebx, 0	; EBX will hold the integer
-	mov esi, buf_in
+	mov esi, index
 
 .next_char: mov al, [esi]
 	cmp al, 10	; newline?
@@ -288,7 +289,14 @@ print_buf_sum: push ebp
 ; -------------------------------------------------------------------------
 _start:
 	; 1) Read the first line => N
-	call read_line
+	;call read_line
+
+	mov eax, 3	; sys_read
+	mov ebx, 0	; stdin (file descriptor 0)
+	mov ecx, index
+	mov edx, 4
+	int 0x80
+
 	call convert_string_to_int_in_EBX	; result in EBX
 	mov esi, ebx				; store N in ESI (we'll decrement ESI each loop)
 
