@@ -15,7 +15,9 @@
 section .data
 
 ; We'll use these for output
-newline: db 10, 0 ; A single newline character
+newline:	db	10, 0 ; A single newline character
+input:		db	"Input:" , 10, 0 ;10 for new line, 0 for null
+output:		db	"Output:", 10, 0
 
 section .bss
 
@@ -24,7 +26,11 @@ s1: resb 128 ; Buffer for first reversed number
 s2: resb 128 ; Buffer for second reversed number
 buf_sum: resb 256 ; Buffer for the reversed sum
 index:	resd	1
+<<<<<<< HEAD
 buf_in:	resd	10000
+=======
+cases:	resd	10000
+>>>>>>> Working code, before changing all label names
 
 section .text
 global _start
@@ -259,6 +265,33 @@ convert_string_to_int_in_EBX: push ebp
 .done: pop ebp
 	ret
 
+; Input:
+; eax = integer value to convert
+; esi = pointer to buffer to store the string in (must have room for at least 10 bytes)
+; Output:
+; eax = pointer to the first character of the generated string
+; ecx = length of the generated string
+
+int_to_string:
+	add esi, 9
+	mov byte [esi], 0	; String terminator
+	mov ebx, 10
+	xor ecx, ecx		; ecx = 0
+
+.next_digit:
+	xor edx, edx		; Clear edx prior to dividing edx:eax by ebx
+	inc ecx			; count the number of characters
+	div ebx			; eax /= 10
+	add dl, '0'		; Convert the remainder to ASCII
+	dec esi			; store characters in reverse order
+	mov [esi], dl
+	test eax, eax
+	jnz .next_digit		; Repeat until eax==0
+
+	; return a pointer to the first digit (not necessarily the start of the provided buffer)
+	mov eax, esi
+	ret
+
 ; -------------------------------------------------------------------------
 ; print_buf_sum:
 ; Print buf_sum as is (which is the reversed sum after zero-stripping),
@@ -290,16 +323,25 @@ print_buf_sum: push ebp
 ; -------------------------------------------------------------------------
 _start:
 	; 1) Read the first line => N
+	mov edx, 8
+    	mov ecx, input
+    	call print_string
+
 	call read_line
 	mov esi, buf_in
 	call convert_string_to_int_in_EBX	; result in EBX
 	mov [index], ebx
 	mov esi, ebx				; store N in ESI (we'll decrement ESI each loop)
+<<<<<<< HEAD
 	xor edi, edi
+=======
+	xor ecx, ecx		; counter for storing the cases
+>>>>>>> Working code, before changing all label names
 
 .loop_cases: cmp esi, 0
 	push esi
-	je .done_all
+	push ecx
+	je .print_cases
 
 	; read next line
 	call read_line
@@ -320,11 +362,43 @@ _start:
 	mov esi, buf_sum
 	call convert_string_to_int_in_EBX
 
+	pop ecx
+	mov [cases + 4*ecx], ebx
+	inc ecx
+
 	; print the result
 	;call print_buf_sum
 	pop esi
 	dec esi
 	jmp .loop_cases
+
+.print_cases: mov edx, 9
+    	mov ecx, output
+    	call print_string
+
+	xor ecx, ecx
+	mov esi, [index]
+
+.print_loop: cmp esi, 0
+	push esi
+	je .done_all
+
+	mov eax, [cases + 4*ecx]
+	mov esi, buf_sum
+	inc ecx
+	push ecx
+	call int_to_string
+
+	mov edx, ecx
+    	mov ecx, eax
+    	call print_string
+
+	call print_newline
+
+	pop ecx
+	pop esi
+	dec esi
+	jmp .print_loop
 
 .done_all: mov eax, 1		; Normal exit
 	xor ebx, ebx
