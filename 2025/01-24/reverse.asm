@@ -19,11 +19,12 @@ newline: db 10, 0 ; A single newline character
 
 section .bss
 
-buf_in: resb 256 ; Buffer for reading lines
+;buf_in: resb 256 ; Buffer for reading lines
 s1: resb 128 ; Buffer for first reversed number
 s2: resb 128 ; Buffer for second reversed number
 buf_sum: resb 256 ; Buffer for the reversed sum
 index:	resd	1
+buf_in:	resd	10000
 
 section .text
 global _start
@@ -35,8 +36,8 @@ global _start
 
 read_line: mov eax, 3	; sys_read
 	mov ebx, 0	; stdin (file descriptor 0)
-	mov ecx, buf_in
-	mov edx, 255
+	lea ecx, [buf_in + edi*4]
+	mov edx, 4
 	int 0x80
 	ret
 
@@ -299,6 +300,7 @@ _start:
 
 	call convert_string_to_int_in_EBX	; result in EBX
 	mov esi, ebx				; store N in ESI (we'll decrement ESI each loop)
+	xor edi, edi
 
 .loop_cases: cmp esi, 0
 	push esi
@@ -306,21 +308,22 @@ _start:
 
 	; read next line
 	call read_line
+	inc edi
 
-	cmp eax, 1	; if EAX <= 0, no more input (unexpected), just end
-	jl .done_all
+	;cmp eax, 1	; if EAX <= 0, no more input (unexpected), just end
+	;jl .done_all
 
 	; parse into s1, s2
-	call parse_two_reversed
+	;call parse_two_reversed
 
 	; add them -> buf_sum
-	call add_reversed
+	;call add_reversed
 
 	; remove leading zeros from reversed sum
-	call remove_leading_zeros_in_reversed
+	;call remove_leading_zeros_in_reversed
 
 	; print the result
-	call print_buf_sum
+	;call print_buf_sum
 	pop esi
 	dec esi
 	jmp .loop_cases
