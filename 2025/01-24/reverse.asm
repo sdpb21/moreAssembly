@@ -243,7 +243,7 @@ parse_two_reversed: push ebp
 convert_string_to_int_in_EBX: push ebp
 	mov ebp, esp
 	mov ebx, 0	; EBX will hold the integer
-	mov esi, buf_in
+	;mov esi, buf_in
 
 .next_char: mov al, [esi]
 	cmp al, 10	; newline?
@@ -267,7 +267,7 @@ convert_string_to_int_in_EBX: push ebp
 print_buf_sum: push ebp
 	mov ebp, esp
 	mov esi, buf_sum
-	xor edx, edx ; length in EDX
+	xor edx, edx		; length in EDX
 
 .len_loop: mov al, [esi + edx]
 	cmp al, 0
@@ -291,6 +291,7 @@ print_buf_sum: push ebp
 _start:
 	; 1) Read the first line => N
 	call read_line
+	mov esi, buf_in
 	call convert_string_to_int_in_EBX	; result in EBX
 	mov [index], ebx
 	mov esi, ebx				; store N in ESI (we'll decrement ESI each loop)
@@ -315,6 +316,9 @@ _start:
 
 	; remove leading zeros from reversed sum
 	;call remove_leading_zeros_in_reversed
+
+	mov esi, buf_sum
+	call convert_string_to_int_in_EBX
 
 	; print the result
 	;call print_buf_sum
