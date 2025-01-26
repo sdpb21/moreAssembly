@@ -195,6 +195,7 @@ parse_two_reversed: push ebp
 .clear_s1: mov byte [edi], 0
 	inc edi
 	loop .clear_s1
+
 	mov edi, s2
 	mov ecx, 128
 
@@ -209,10 +210,6 @@ parse_two_reversed: push ebp
 .next_char_s1: mov al, [esi]
 	cmp al, ' '
 	je .done_s1
-	cmp al, 10
-	je .done_s1 ; newline
-	cmp al, 0
-	je .done_s1
 	mov [edi], al
 	inc edi
 	inc esi
@@ -226,8 +223,6 @@ parse_two_reversed: push ebp
 
 .next_char_s2: mov al, [esi]
 	cmp al, 10
-	je .done_s2
-	cmp al, 0
 	je .done_s2
 	mov [edi], al
 	inc edi
