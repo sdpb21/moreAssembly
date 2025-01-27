@@ -2,6 +2,7 @@
 *.mk
 *.bash
 *.xml
+*.o
 
 2023/11-03/spiritLever.X/Makefile
 2023/11-03/spiritLever.X/debug
@@ -13,3 +14,5 @@
 2023/11-03/spiritLevel.X/nbproject
 /2023/11-03/spiritLevel.X/dist/default/
 /2023/11-03/spiritLevel.X/build/default/
+/2025/01-24/reverse.asm
+/.gitignore
