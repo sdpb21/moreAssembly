@@ -48,7 +48,6 @@ up:	jal clrPosition		# clear the current player position
 	# moving to up the actual player position
 	addi $t2, $t2, -1	# decrements the row for player's position
 	jal newPosition		# puts 'P' in the new player's position
-
 	j start			# jump to start label to repeat all again
 
 left:	jal clrPosition		# clear the current player position
@@ -58,7 +57,13 @@ left:	jal clrPosition		# clear the current player position
 	jal newPosition		# puts 'P' in the new player's position
 	j start			# jumps to start label to repeat all again
 
-down:
+down:	jal clrPosition		# clear the current player's position
+
+	# moves to down the actual player's position
+	addi $t2, $t2, 1	# increments the row for player's position
+	jal newPosition		# puts 'P' in the new player's position
+	j start			# jumps to start label to repeat all again
+
 right:
 clrPosition: mul $t4, $t2, 10	# $t4 = player's current row * number of field columns
 	add $t4, $t4, $t3	# $t4 = $t4 + player's current column
