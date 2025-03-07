@@ -64,7 +64,14 @@ down:	jal clrPosition		# clear the current player's position
 	jal newPosition		# puts 'P' in the new player's position
 	j start			# jumps to start label to repeat all again
 
-right:
+right:	jal clrPosition		# clear the current player's position
+
+	# move to the right the actual player's position
+	addi $t3, $t3, 1	# increments the column for player's position
+	jal newPosition		# puts 'P' in the new player's position
+	j start			# jumps to start label to repeat all again
+
+	# procedures to reduce code lines
 clrPosition: mul $t4, $t2, 10	# $t4 = player's current row * number of field columns
 	add $t4, $t4, $t3	# $t4 = $t4 + player's current column
 	addi $t5, $zero, ' '	# $t5 = ' '
@@ -76,7 +83,6 @@ newPosition: mul $t4, $t2, 10	# $t4 = player's new row * number of field columns
 	addi $t5,$zero, 'P'	# $t5 = 'P' , player byte
 	sb $t5, field($t4)	# stores 'P' in new player's position
 	jr $ra			# go to the next line of jal newPosition
-
 
 	j stop			# jumps to stop label to stop the program
 
