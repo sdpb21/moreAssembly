@@ -43,15 +43,35 @@ keyboardReady:lw $t0, 0($s0)	# load the keyboard control register in $t0
 	beq $a0, 'd', right	# go to right label if $a0 is equal to 'd'
 	j keyboardReady		# if $a0 is none of the above, read again
 
-up:	mul $t4, $t2, 10	# $t4 = player's current row * number of field columns
-	add $t4, $t4, $t3	# $t4 = $t4 + player's current column
-	addi $t5, $t5, ' '	# $t5 = ' '
-	sb $t5, field($t4)	# clear current player position
-	
+up:	jal clrPosition		# clear the current player position
+
+	# moving to up the actual player position
+	addi $t2, $t2, -1	# decrements the row for player's position
+	jal newPosition		# puts 'P' in the new player's position
+
 	j start			# jump to start label to repeat all again
-left:
+
+left:	jal clrPosition		# clear the current player position
+
+	# move to the left the actual player's position
+	addi $t3, $t3, -1	# decrements the column for player's position
+	jal newPosition		# puts 'P' in the new player's position
+	j start			# jumps to start label to repeat all again
+
 down:
 right:
+clrPosition: mul $t4, $t2, 10	# $t4 = player's current row * number of field columns
+	add $t4, $t4, $t3	# $t4 = $t4 + player's current column
+	addi $t5, $zero, ' '	# $t5 = ' '
+	sb $t5, field($t4)	# clear current player position
+	jr $ra			# go to the next line of jal clrPosition
+
+newPosition: mul $t4, $t2, 10	# $t4 = player's new row * number of field columns
+	add $t4, $t4, $t3	# $t4 = $t4 + player's current column
+	addi $t5,$zero, 'P'	# $t5 = 'P' , player byte
+	sb $t5, field($t4)	# stores 'P' in new player's position
+	jr $ra			# go to the next line of jal newPosition
+
 
 	j stop			# jumps to stop label to stop the program
 
