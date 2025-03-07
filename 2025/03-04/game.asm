@@ -28,6 +28,23 @@ printField: lb $a0, field($t1)	# load the byte on $t1 position from field, in $a
 	addi $t1, $t1, 1	# go to the next byte to print
 fieldEnd: bne $a0, '!', printField # if byte isn't '!', repeat
 
+	# get input on MMIO keyboard simulator
+keyboardReady:lw $t0, 0($s0)	# load the keyboard control register in $t0
+	andi $t0, $t0, 1	# check if bit 0 in keyboard control register is 1
+	beq $t0, $zero, keyboardReady # if bit 0 of keyboard control register is 0, check again
+	lb $a0, 4($s0)		# load byte readed from keyboard data register
+
+	beq $a0, 'w', up	# go to up label if $a0 is equal to 'w'
+	beq $a0, 'a', left	# go to left label if $a0 is equal to 'a'
+	beq $a0, 's', down	# go to down label if $a0 is equal to 's'
+	beq $a0, 'd', right	# go to right label if $a0 is equal to 'd'
+	j keyboardReady		# if $a0 is none of the above, read again
+
+up:
+left:
+down:
+right:
+
 	j stop			# jumps to stop label to stop the program
 
 	# to print on MMIO display
