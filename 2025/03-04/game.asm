@@ -14,6 +14,7 @@ field:	.ascii	"#########\n"
 	li $s0, 0xffff0000	# load the base address of MMIO area in $s0
 	addi $t2, $t2, 3	# player's current row
 	addi $t3, $t3, 3	# player's current column
+	andi $t6, 0		# rewards counter clearing
 
 	# printing the score
 start:	andi $t1, 0		# clear $t1
@@ -47,6 +48,7 @@ up:	jal clrPosition		# clear the current player position
 
 	# moving to up the actual player position
 	addi $t2, $t2, -1	# decrements the row for player's position
+	jal isReward		# looking for the reward
 	jal newPosition		# puts 'P' in the new player's position
 	j start			# jump to start label to repeat all again
 
@@ -54,6 +56,7 @@ left:	jal clrPosition		# clear the current player position
 
 	# move to the left the actual player's position
 	addi $t3, $t3, -1	# decrements the column for player's position
+	jal isReward		# looking for the reward
 	jal newPosition		# puts 'P' in the new player's position
 	j start			# jumps to start label to repeat all again
 
@@ -61,6 +64,7 @@ down:	jal clrPosition		# clear the current player's position
 
 	# moves to down the actual player's position
 	addi $t2, $t2, 1	# increments the row for player's position
+	jal isReward		# looking for the reward
 	jal newPosition		# puts 'P' in the new player's position
 	j start			# jumps to start label to repeat all again
 
@@ -68,6 +72,7 @@ right:	jal clrPosition		# clear the current player's position
 
 	# move to the right the actual player's position
 	addi $t3, $t3, 1	# increments the column for player's position
+	jal isReward		# looking for the reward
 	jal newPosition		# puts 'P' in the new player's position
 	j start			# jumps to start label to repeat all again
 
@@ -83,6 +88,13 @@ newPosition: mul $t4, $t2, 10	# $t4 = player's new row * number of field columns
 	addi $t5,$zero, 'P'	# $t5 = 'P' , player byte
 	sb $t5, field($t4)	# stores 'P' in new player's position
 	jr $ra			# go to the next line of jal newPosition
+
+isReward: mul $t4, $t2, 10	# $t4 = player's new row * number of field columns
+	add $t4, $t4, $t3	# $t4 = $t4 + player's current column
+	lbu $t5, field($t4)	# load byte in $t5 to look for the reward
+	bne $t5, 'R', notReward	# not reward in actual field position
+	addi $t6, $t6, 5	# reward found, increment counter in 5
+notReward: jr $ra		# no reward found, return
 
 	j stop			# jumps to stop label to stop the program
 
