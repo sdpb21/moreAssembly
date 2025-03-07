@@ -1,20 +1,22 @@
 .data
 
 score:	.asciiz	"Score: 0\n"
-field:	.asciiz	"#########\n"
-	.asciiz	"#  R    #\n"
-	.asciiz	"#       #\n"
-	.asciiz	"#  P    #\n"
-	.asciiz	"#       #\n"
-	.asciiz	"#       #\n"
-	.asciiz	"#########\n!"
+field:	.ascii	"#########\n"
+	.ascii	"#  R    #\n"
+	.ascii	"#       #\n"
+	.ascii	"#  P    #\n"
+	.ascii	"#       #\n"
+	.ascii	"#       #\n"
+	.ascii	"#########\n!"
 
 .text
 
 	li $s0, 0xffff0000	# load the base address of MMIO area in $s0
+	addi $t2, $t2, 3	# player's current row
+	addi $t3, $t3, 3	# player's current column
 
 	# printing the score
-	andi $t1, 0		# clear $t1
+start:	andi $t1, 0		# clear $t1
 printScore: lb $a0, score($t1)	# load the byte on $t1 position from score, in $a0
 	jal displayReady	# print the byte loaded on MMIO display
 	addi $t1, $t1, 1	# increments $t1 to go for the next byte in score string
@@ -34,13 +36,19 @@ keyboardReady:lw $t0, 0($s0)	# load the keyboard control register in $t0
 	beq $t0, $zero, keyboardReady # if bit 0 of keyboard control register is 0, check again
 	lb $a0, 4($s0)		# load byte readed from keyboard data register
 
+	# where to move according to keyboard input
 	beq $a0, 'w', up	# go to up label if $a0 is equal to 'w'
 	beq $a0, 'a', left	# go to left label if $a0 is equal to 'a'
 	beq $a0, 's', down	# go to down label if $a0 is equal to 's'
 	beq $a0, 'd', right	# go to right label if $a0 is equal to 'd'
 	j keyboardReady		# if $a0 is none of the above, read again
 
-up:
+up:	mul $t4, $t2, 10	# $t4 = player's current row * number of field columns
+	add $t4, $t4, $t3	# $t4 = $t4 + player's current column
+	addi $t5, $t5, ' '	# $t5 = ' '
+	sb $t5, field($t4)	# clear current player position
+	
+	j start			# jump to start label to repeat all again
 left:
 down:
 right:
