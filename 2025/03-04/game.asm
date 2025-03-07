@@ -2,11 +2,11 @@
 
 score:	.asciiz	"Score: 0\n"
 field:	.asciiz	"#########\n"
-	.asciiz	"#########\n"
-	.asciiz	"#########\n"
-	.asciiz	"#########\n"
-	.asciiz	"#########\n"
-	.asciiz	"#########\n"
+	.asciiz	"#  R    #\n"
+	.asciiz	"#       #\n"
+	.asciiz	"#  P    #\n"
+	.asciiz	"#       #\n"
+	.asciiz	"#       #\n"
 	.asciiz	"#########\n!"
 
 .text
