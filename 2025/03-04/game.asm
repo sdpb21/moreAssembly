@@ -89,12 +89,47 @@ newPosition: mul $t4, $t2, 10	# $t4 = player's new row * number of field columns
 	sb $t5, field($t4)	# stores 'P' in new player's position
 	jr $ra			# go to the next line of jal newPosition
 
-isReward: mul $t4, $t2, 10	# $t4 = player's new row * number of field columns
+isReward: addi $sp, $sp, -4	# making space in the stack for a word
+	sw $ra, 0($sp)		# store the return address in the stack
+
+	mul $t4, $t2, 10	# $t4 = player's new row * number of field columns
 	add $t4, $t4, $t3	# $t4 = $t4 + player's current column
 	lbu $t5, field($t4)	# load byte in $t5 to look for the reward
 	bne $t5, 'R', notReward	# not reward in actual field position
 	addi $t6, $t6, 5	# reward found, increment counter in 5
-notReward: jr $ra		# no reward found, return
+
+	# generating random row for new reward
+	addi $a2, $zero, 6	# Set upper bound to 6, for 5 rows max
+	jal genRandomNum	# generate random number procedure
+	add $t7, $zero, $a0	# Copy the random number to $t7
+
+	# generating random colum for new reward
+	addi $a2, $zero, 8	# Set upper bound to 8, for 7 columns max
+	jal genRandomNum	# generate random number procedure
+	add $t8, $zero, $a0	# Copy the random number to $t8
+
+	# storing the new reward in the generated position
+	mul $t4, $t7, 10	# $t4 = reward's new row * number of field columns
+	add $t4, $t4, $t8	# $t4 = $t4 + reward's new column
+	addi $t5,$zero, 'R'	# $t5 = 'R' , reward byte
+	sb $t5, field($t4)	# stores 'R' in new reward's position
+
+	lw $ra, 0($sp)		# load the return address from the stack
+	addi $sp, $sp, 4	# return the stack pointer to it's original value
+
+	notReward: jr $ra	# no reward found, return
+
+genRandomNum: addi $v0, $zero, 40 # Syscall 40: Random seed
+	add $a0, $zero, 1	# Set RNG ID to 1
+	addi $a1, $zero, 1	# Set Random seed to 1
+	syscall
+
+	addi $v0, $zero, 42	# Syscall 42: Random int range
+	add $a0, $zero, $zero	# Set RNG ID to 0
+	add $a1, $zero, $a2	# Set upper bound to $a2, for $a2-1 columns max
+	syscall			# Generate a random number and put it in $a0
+	beq $a0, $zero, genRandomNum # if number generated is 0, repeat
+	jr $ra
 
 	j stop			# jumps to stop label to stop the program
 
