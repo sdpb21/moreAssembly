@@ -9,6 +9,7 @@ field:	.ascii	"#########\n"
 	.ascii	"#       #\n"
 	.ascii	"#       #\n"
 	.ascii	"#########\n!"
+gameOver: .asciiz "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGAME OVER!! "
 
 .text
 
@@ -23,17 +24,9 @@ field:	.ascii	"#########\n"
 	jal intToString		# call intToString procedure
 
 	# printing the score
-start:	andi $t1, 0		# clear $t1
-printScore: lb $a0, scoreMsg($t1) # load the byte on $t1 position from score, in $a0
-	jal displayReady	# print the byte loaded on MMIO display
-	addi $t1, $t1, 1	# increments $t1 to go for the next byte in score string
-	bne $a0, $zero, printScore # if char is not null, repeat
+start:	jal printSc
 
-	andi $t1, 0		# clear $t1 again
-printNumber: lb $a0, scoreNum($t1) # load the byte on $t1 position from scoreNum, in $a0
-	jal displayReady	# print the byte loaded on MMIO display
-	addi $t1, $t1, 1	# increments $t1 to go for the next byte in scoreNum string
-	bne $a0, $zero, printNumber # if char is not null, repeat
+	jal printNum
 
 	# printing the field
 	andi $t1, 0		# clear $t1 again
@@ -92,18 +85,59 @@ right:	jal clrPosition		# clear the current player's position
 	j start			# jumps to start label to repeat all again
 
 	# procedures to reduce code lines
+###########
+# printSc #
+###########
+printSc: addi $sp, $sp, -4	# making space in the stack for a word
+	sw $ra, 0($sp)		# store the return address in the stack
+
+	andi $t1, 0		# clear $t1
+printScore: lb $a0, scoreMsg($t1) # load the byte on $t1 position from scoreMsg, in $a0
+	jal displayReady	# print the byte loaded on MMIO display
+	addi $t1, $t1, 1	# increments $t1 to go for the next byte in scoreMsg string
+	bne $a0, $zero, printScore # if char is not null, repeat
+
+	lw $ra, 0($sp)		# load the return address from the stack
+	addi $sp, $sp, 4	# return the stack pointer to it's original value
+	jr $ra			# go to the next line where printSc was called
+
+############
+# printNum #
+############
+printNum: addi $sp, $sp, -4	# making space in the stack for a word
+	sw $ra, 0($sp)		# store the return address in the stack
+
+	andi $t1, 0		# clear $t1 again
+printNumber: lb $a0, scoreNum($t1) # load the byte on $t1 position from scoreNum, in $a0
+	jal displayReady	# print the byte loaded on MMIO display
+	addi $t1, $t1, 1	# increments $t1 to go for the next byte in scoreNum string
+	bne $a0, $zero, printNumber # if char is not null, repeat
+
+	lw $ra, 0($sp)		# load the return address from the stack
+	addi $sp, $sp, 4	# return the stack pointer to it's original value
+	jr $ra			# go to the next line where printNum was called
+
+###############
+# clrPosition #
+###############
 clrPosition: mul $t4, $t2, 10	# $t4 = player's current row * number of field columns
 	add $t4, $t4, $t3	# $t4 = $t4 + player's current column
 	addi $t5, $zero, ' '	# $t5 = ' '
 	sb $t5, field($t4)	# clear current player position
 	jr $ra			# go to the next line of jal clrPosition
 
+###############
+# newPosition #
+###############
 newPosition: mul $t4, $t2, 10	# $t4 = player's new row * number of field columns
 	add $t4, $t4, $t3	# $t4 = $t4 + player's current column
 	addi $t5,$zero, 'P'	# $t5 = 'P' , player byte
 	sb $t5, field($t4)	# stores 'P' in new player's position
 	jr $ra			# go to the next line of jal newPosition
 
+############
+# isReward #
+############
 isReward: addi $sp, $sp, -4	# making space in the stack for a word
 	sw $ra, 0($sp)		# store the return address in the stack
 
@@ -137,8 +171,11 @@ isReward: addi $sp, $sp, -4	# making space in the stack for a word
 	lw $ra, 0($sp)		# load the return address from the stack
 	addi $sp, $sp, 4	# return the stack pointer to it's original value
 
-	notReward: jr $ra	# no reward found, return
+notReward: jr $ra	# no reward found, return
 
+################
+# genRandomNum #
+################
 genRandomNum: addi $v0, $zero, 40 # Syscall 40: Random seed
 	add $a0, $zero, 1	# Set RNG ID to 1
 	addi $a1, $zero, 1	# Set Random seed to 1
@@ -154,12 +191,18 @@ genRandomNum: addi $v0, $zero, 40 # Syscall 40: Random seed
 	j stop			# jumps to stop label to stop the program
 
 	# to print on MMIO display
+################
+# displayReady #
+################
 displayReady: lw $t0, 8($s0)	# load the display control register in $t0
 	andi $t0, $t0, 1	# check if bit 0 in display control register is 1
 	beq $t0, $zero, displayReady # if display control register bit 0 is 0 check again
 	sb $a0, 12($s0)		# store data to print in display data register
 	jr $ra			# jump to the next line where displayReady was called
 
+###############
+# intToString #
+###############
 intToString: addi $sp, $sp, -4	
 	sw $t0, ($sp)
 	bltz $a0, negativeNum
@@ -213,5 +256,15 @@ step2:	addi $t0, $zero, '\n'	# add a jump to a new line char
 	addi $sp, $sp, 4
 	jr $ra		# jump to next line where was called
 
-stop:	li $v0, 10		# load 10 in $v0 to stop program from running
+stop:	andi $t1, 0		# clear $t1
+printGameO: lb $a0, gameOver($t1) # load the byte on $t1 position from gameOver, in $a0
+	jal displayReady	# print the byte loaded on MMIO display
+	addi $t1, $t1, 1	# increments $t1 to go for the next byte in gameOver string
+	bne $a0, $zero, printGameO # if char is not null, repeat
+
+	jal printSc
+
+	jal printNum
+
+	li $v0, 10		# load 10 in $v0 to stop program from running
 	syscall			# stop program from running
