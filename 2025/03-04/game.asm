@@ -1,6 +1,7 @@
 .data
 
-score:	.asciiz	"Score: 0\n"
+scoreMsg:.asciiz"Score: "
+scoreNum:.space 5
 field:	.ascii	"#########\n"
 	.ascii	"#  R    #\n"
 	.ascii	"#       #\n"
@@ -16,12 +17,23 @@ field:	.ascii	"#########\n"
 	addi $t3, $t3, 3	# player's current column
 	andi $t6, 0		# rewards counter clearing
 
+	# reward int to string conversion
+	add $a0, $zero, $t6	# $a0 = int to convert
+	la $a1, scoreNum	# $a1 = address of string where converted number will be kept
+	jal intToString		# call intToString procedure
+
 	# printing the score
 start:	andi $t1, 0		# clear $t1
-printScore: lb $a0, score($t1)	# load the byte on $t1 position from score, in $a0
+printScore: lb $a0, scoreMsg($t1) # load the byte on $t1 position from score, in $a0
 	jal displayReady	# print the byte loaded on MMIO display
 	addi $t1, $t1, 1	# increments $t1 to go for the next byte in score string
 	bne $a0, $zero, printScore # if char is not null, repeat
+
+	andi $t1, 0		# clear $t1 again
+printNumber: lb $a0, scoreNum($t1) # load the byte on $t1 position from scoreNum, in $a0
+	jal displayReady	# print the byte loaded on MMIO display
+	addi $t1, $t1, 1	# increments $t1 to go for the next byte in scoreNum string
+	bne $a0, $zero, printNumber # if char is not null, repeat
 
 	# printing the field
 	andi $t1, 0		# clear $t1 again
@@ -98,6 +110,11 @@ isReward: addi $sp, $sp, -4	# making space in the stack for a word
 	bne $t5, 'R', notReward	# not reward in actual field position
 	addi $t6, $t6, 5	# reward found, increment counter in 5
 
+	# reward int to string conversion
+	add $a0, $zero, $t6	# $a0 = int to convert
+	la $a1, scoreNum	# $a1 = address of string where converted number will be kept
+	jal intToString		# call intToString procedure
+
 	# generating random row for new reward
 	addi $a2, $zero, 6	# Set upper bound to 6, for 5 rows max
 	jal genRandomNum	# generate random number procedure
@@ -139,6 +156,59 @@ displayReady: lw $t0, 8($s0)	# load the display control register in $t0
 	beq $t0, $zero, displayReady # if display control register bit 0 is 0 check again
 	sb $a0, 12($s0)		# store data to print in display data register
 	jr $ra			# jump to the next line where displayReady was called
+
+intToString: addi $sp, $sp, -4	
+	sw $t0, ($sp)
+	bltz $a0, negativeNum
+	j step0		# go to step0
+
+negativeNum: li   $t0, '-'
+	sb $t0, ($a1)
+	addi $a1, $a1, 1
+	li $t0, -1
+	mul $a0, $a0, $t0
+
+step0: li $t0, -1
+	addi $sp, $sp, -4	# make space in stack
+	sw $t0, ($sp)
+
+storeDigit: blez $a0, step1
+	li $t0, 10
+	div $a0, $t0
+	mfhi $t0	# $t0 = remainder
+	mflo $a0	# num = quotient
+
+	addi $sp, $sp, -4	# make space in the stack
+	sw $t0, ($sp)
+	j storeDigit
+
+step1:	lw $t0, ($sp)
+	addi $sp, $sp, 4
+
+	bltz $t0, negativeDigit
+	j loadDigit
+
+negativeDigit: li   $t0, '0'
+	sb $t0, ($a1)
+	addi $a1, $a1, 1
+	j step2
+
+loadDigit: bltz $t0, step2
+	addi $t0, $t0, '0'
+	sb $t0, ($a1)
+	addi $a1, $a1, 1
+
+	lw $t0, ($sp)
+	addi $sp, $sp, 4
+	j loadDigit
+
+step2:	addi $t0, $zero, '\n'	# add a jump to a new line char
+	sb $t0, ($a1)	# store '\n' in the string
+	addi $a1, $a1, 1	# next byte address
+	sb $zero, ($a1)
+	lw $t0, ($sp)
+	addi $sp, $sp, 4
+	jr $ra		# jump to next line where was called
 
 stop:	li $v0, 10		# load 10 in $v0 to stop program from running
 	syscall			# stop program from running
