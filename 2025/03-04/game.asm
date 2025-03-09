@@ -45,18 +45,23 @@ fieldEnd: bne $a0, '!', printField # if byte isn't '!', repeat
 	beq $t3, 0, stop	# if $t3=0 player has collide with left wall
 	beq $t3, 8, stop	# if $t3=0 player has colide with right wall
 
+	addi $v0, $zero, 32 # syscall for sleep
+	addi $a0, $zero, 2000	# for a 2000 ms delay
+	syscall
+
 	# get input on MMIO keyboard simulator
-keyboardReady:lw $t0, 0($s0)	# load the keyboard control register in $t0
-	andi $t0, $t0, 1	# check if bit 0 in keyboard control register is 1
-	beq $t0, $zero, keyboardReady # if bit 0 of keyboard control register is 0, check again
-	lb $a0, 4($s0)		# load byte readed from keyboard data register
+keyboardReady: #lw $t0, 0($s0)	# load the keyboard control register in $t0
+	#andi $t0, $t0, 1	# check if bit 0 in keyboard control register is 1
+	#beq $t0, $zero, keyboardReady # if bit 0 of keyboard control register is 0, check again
+	lb $a1, 4($s0)		# load byte readed from keyboard data register
 
 	# where to move according to keyboard input
-	beq $a0, 'w', up	# go to up label if $a0 is equal to 'w'
-	beq $a0, 'a', left	# go to left label if $a0 is equal to 'a'
-	beq $a0, 's', down	# go to down label if $a0 is equal to 's'
-	beq $a0, 'd', right	# go to right label if $a0 is equal to 'd'
-	j keyboardReady		# if $a0 is none of the above, read again
+	beq $a1, 'w', up	# go to up label if $a1 is equal to 'w'
+	beq $a1, 'a', left	# go to left label if $a1 is equal to 'a'
+	beq $a1, 's', down	# go to down label if $a1 is equal to 's'
+	beq $a1, 'd', right	# go to right label if $a1 is equal to 'd'
+	#addi $a1, $zero, 'w'
+	j keyboardReady		# if $a1 is none of the above, read again
 
 up:	jal clrPosition		# clear the current player position
 
@@ -164,9 +169,10 @@ isReward: addi $sp, $sp, -4	# making space in the stack for a word
 	add $t7, $zero, $a0	# Copy the random number to $t7
 
 	# generating random colum for new reward
-	addi $a2, $zero, 8	# Set upper bound to 8, for 7 columns max
+rewardColumn: addi $a2, $zero, 8 # Set upper bound to 8, for 7 columns max
 	jal genRandomNum	# generate random number procedure
 	add $t8, $zero, $a0	# Copy the random number to $t8
+	beq $t8, $t3, rewardColumn # if reward column is equal to player column, repeat (this is to avoid that player and reward has the same row and column)
 
 	# storing the new reward in the generated position
 	mul $t4, $t7, 10	# $t4 = reward's new row * number of field columns
