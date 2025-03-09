@@ -37,7 +37,13 @@ printField: lb $a0, field($t1)	# load the byte on $t1 position from field, in $a
 fieldEnd: bne $a0, '!', printField # if byte isn't '!', repeat
 
 	# if Score is 100 end the game and prints GAME OVER
-	beq $t6, 100, stop	#
+	beq $t6, 100, stop	# if score is 100 jumps to stop label
+
+	# looking for the players position, if it has collide with a wall then prints GAME OVER
+	beq $t2, 0, stop	# if $t2=0 player has collide with upper wall
+	beq $t2, 6, stop	# if $t2=6 player has collide with lower wall
+	beq $t3, 0, stop	# if $t3=0 player has collide with left wall
+	beq $t3, 8, stop	# if $t3=0 player has colide with right wall
 
 	# get input on MMIO keyboard simulator
 keyboardReady:lw $t0, 0($s0)	# load the keyboard control register in $t0
