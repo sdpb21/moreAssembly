@@ -43,6 +43,9 @@ printField: lb $a0, field($t1)	# load the byte on $t1 position from field, in $a
 	addi $t1, $t1, 1	# go to the next byte to print
 fieldEnd: bne $a0, '!', printField # if byte isn't '!', repeat
 
+	# if Score is 100 end the game and prints GAME OVER
+	beq $t6, 100, stop	#
+
 	# get input on MMIO keyboard simulator
 keyboardReady:lw $t0, 0($s0)	# load the keyboard control register in $t0
 	andi $t0, $t0, 1	# check if bit 0 in keyboard control register is 1
