@@ -45,12 +45,16 @@ fieldEnd: bne $a0, '!', printField # if byte isn't '!', repeat
 	beq $t3, 0, stop	# if $t3=0 player has collide with left wall
 	beq $t3, 8, stop	# if $t3=0 player has colide with right wall
 
+	# delay
 	andi $t0, 0		# clears $t0
-delayLoop: addi $v0, $zero, 32 # syscall for sleep
-	addi $a0, $zero, 50	# for a 50 ms delay
-	syscall			# sleeps for the quantity of ms as the integer stored in $a0
-	addi $t0, $t0, 1	# increments $t0 by 1
-	bne $t0, 40, delayLoop	# if $t0 is not 40, jumps to delayLoop label
+#delayLoop: addi $v0, $zero, 32 # syscall for sleep
+	#addi $a0, $zero, 50	# for a 50 ms delay
+	#syscall			# sleeps for the quantity of ms as the integer stored in $a0
+	#addi $t0, $t0, 1	# increments $t0 by 1
+	#bne $t0, 40, delayLoop	# if $t0 is not 40, jumps to delayLoop label
+delayLoop: nop
+	addi $t0, $t0, 1
+	bne $t0, 21000, delayLoop
 
 	# get input on MMIO keyboard simulator
 keyboardReady: #lw $t0, 0($s0)	# load the keyboard control register in $t0
